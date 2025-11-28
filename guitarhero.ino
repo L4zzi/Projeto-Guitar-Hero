@@ -3,28 +3,25 @@
 #include <WiFiMulti.h>
 #include <WebSocketsClient.h>
 
-// ✅ Configurações WiFi 
-// rodear por iphone
-//const char* ssid = "iPhone 8 de Lucca ";
-//const char* password = "12345678";
+
  
 // senha de casa teste
-const char* ssid = "VIVOFIBRA-3161";
-const char* password = "8MYLhYWz8T";
+const char* ssid = "NOME DA REDE";
+const char* password = "SENHA DA REDE";
 
 WiFiMulti WiFiMulti;
 WebSocketsClient webSocket;
 
-// ✅ Botões do Guitar Hero
+//  Botões do Guitar Hero
 const int buttonPins[] = {18, 19, 21};
 const int numButtons = 3;
 
 bool websocketConnected = false;
 
-// ✅ Estado anterior dos botões para detecção de mudança
+//  Estado anterior dos botões para detecção de mudança
 int lastButtonState[] = {HIGH, HIGH, HIGH, HIGH};
 
-// ✅ Função de evento do WebSocket
+// Função de evento do WebSocket
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
   switch(type) {
     case WStype_DISCONNECTED:
@@ -56,7 +53,7 @@ void setup() {
   Serial.println();
   Serial.println("🎸 Iniciando Guitar Hero IoT...");
 
-  // ✅ Configura botões com PULLUP
+  //  Configura botões com PULLUP
   for(int i = 0; i < numButtons; i++) {
     pinMode(buttonPins[i], INPUT_PULLUP);
     lastButtonState[i] = digitalRead(buttonPins[i]); // Lê estado inicial
@@ -65,7 +62,7 @@ void setup() {
                   lastButtonState[i] == HIGH ? "SOLTO" : "PRESSIONADO");
   }
 
-  // ✅ Conecta WiFi
+  // Conecta WiFi
   WiFiMulti.addAP(ssid, password);
   Serial.println("📡 Conectando WiFi...");
   
@@ -79,9 +76,9 @@ void setup() {
   Serial.print("📶 IP: ");
   Serial.println(WiFi.localIP());
 
-  // ✅✅✅ CORRIGIDO: Aspas fechadas corretamente!
+  
   // ALTERE ESTE IP PARA O DO SEU COMPUTADOR!
-  webSocket.begin("192.168.15.7", 3000, "/"); // ← IP DO SEU PC AQUI!
+  webSocket.begin("Seu IP ", 3000, "/"); // ← IP DO SEU PC AQUI!
   webSocket.onEvent(webSocketEvent);
   webSocket.setReconnectInterval(5000);
 
@@ -97,7 +94,7 @@ void checkButtons() {
   for(int i = 0; i < numButtons; i++) {
     int currentState = digitalRead(buttonPins[i]);
     
-    // ✅ Só processa se o estado mudou
+    //  Só processa se o estado mudou
     if (currentState != lastButtonState[i]) {
       // Aguarda debounce
       delay(10);
@@ -106,7 +103,7 @@ void checkButtons() {
       if (currentState != lastButtonState[i]) {
         lastButtonState[i] = currentState;
         
-        // ✅ Só envia quando o botão é PRESSIONADO (LOW)
+        //  Só envia quando o botão é PRESSIONADO (LOW)
         if (currentState == LOW) {
           sendButtonPress(i);
         } else {
@@ -135,8 +132,8 @@ void sendButtonPress(int buttonIndex) {
   } else {
     Serial.println("❌ WebSocket não conectado");
     
-    // ✅ Tenta reconectar
+    //  Tenta reconectar
     Serial.println("🔄 Tentando reconectar WebSocket...");
-    webSocket.begin("192.168.15.7", 3000, "/"); // ← MESMO IP DE ANTES!
+    webSocket.begin("Seu IP ", 3000, "/"); // ← MESMO IP DE ANTES!
   }
 }
